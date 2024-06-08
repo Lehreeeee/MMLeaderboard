@@ -1,0 +1,4 @@
+name: MMLeaderboard
+version: '${project.version}'
+main: me.lehreeeee.mmleaderboard.MMLeaderboard
+api-version: '1.20'
