@@ -3,19 +3,26 @@ package me.lehreeeee.mmleaderboard;
 import me.lehreeeee.mmleaderboard.listeners.EntityDamageListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 public final class MMLeaderboard extends JavaPlugin {
 
+    private ScoreboardHandler handler;
     @Override
     public void onEnable() {
         // Plugin startup logic
-        new EntityDamageListener(this);
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        handler = new ScoreboardHandler(manager,manager.getMainScoreboard());
+
+        new EntityDamageListener(this,handler);
+
         Bukkit.getLogger().info("[MMLeaderboard] Enabled MythicMobs Leaderboard...");
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        handler.deleteObjective("v_dummy");
         Bukkit.getLogger().info("[MMLeaderboard] Disabled MythicMobs Leaderboard...");
     }
 }
