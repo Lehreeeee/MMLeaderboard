@@ -1,5 +1,7 @@
 package me.lehreeeee.mmleaderboard;
 
+import me.lehreeeee.mmleaderboard.listeners.EntityDamageListener;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MMLeaderboard extends JavaPlugin {
@@ -7,12 +9,14 @@ public final class MMLeaderboard extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-
+        new EntityDamageListener(this);
+        Bukkit.getLogger().info("[MMLeaderboard] Enabled MythicMobs Leaderboard...");
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        Bukkit.getLogger().info("[MMLeaderboard] Disabled MythicMobs Leaderboard...");
     }
 }
 
