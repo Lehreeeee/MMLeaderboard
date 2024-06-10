@@ -3,10 +3,15 @@ package me.lehreeeee.mmleaderboard.listeners;
 
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
+import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.element.Element;
 import me.lehreeeee.mmleaderboard.MMLeaderboard;
 import me.lehreeeee.mmleaderboard.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -56,5 +61,32 @@ public class EntityDamageListener implements Listener {
 
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onAttack(PlayerAttackEvent event) {
+
+        AttackMetadata attack = event.getAttack();
+        LivingEntity victim = attack.getTarget();
+        boolean isMythicMob = MythicBukkit.inst().getMobManager().isMythicMob(victim);
+
+        if(!isMythicMob) {
+            Bukkit.getLogger().info(debugPrefix+"Victim " + victim.getName() + " is not mythicmobs.");
+            return;
+        }
+
+        DamageMetadata damage = attack.getDamage();
+
+        Optional<ActiveMob> activeMob = MythicBukkit.inst().getMobManager().getActiveMob(victim.getUniqueId());
+        String internalName = activeMob.get().getType().getInternalName();
+
+        if(internalName.equalsIgnoreCase("v_dummy") && damage.hasElement(Element.valueOf("INA"))) {
+//            Bukkit.getLogger().info(debugPrefix+"v_dummy detected, adding 10 ina damage.");
+//            damage.add(10, Element.valueOf("INA")); // add 10 weapon-physical damage
+
+            Bukkit.getLogger().info(debugPrefix+"v_dummy detected, doing 50% more ina element damage.");
+            damage.multiplicativeModifier(1.5, Element.valueOf("INA")); // increase skill damage by 50%
+        }
+
+
+    }
 
 }
