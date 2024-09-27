@@ -6,9 +6,7 @@ import io.lumine.mythic.core.mobs.ActiveMob;
 import me.lehreeeee.mmleaderboard.MMLeaderboard;
 import me.lehreeeee.mmleaderboard.ScoreboardHandler;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,6 +39,15 @@ public class EntityDamageListener implements Listener {
             return;
         }
 
+        // Handle projectile
+        if (damager instanceof Projectile) {
+            Projectile proj = (Projectile) damager;
+            // Set damager to arrow shooter
+            if(proj.getShooter() instanceof Entity) {
+                damager = (Entity) proj.getShooter();
+            }
+        }
+
         if(!(damager instanceof Player)) {
             Bukkit.getLogger().info(debugPrefix+"Damager " + damager.getName() + " is not player.");
             return;
@@ -71,8 +78,8 @@ public class EntityDamageListener implements Listener {
         Bukkit.getLogger().info(debugPrefix+"Internal name = " + internalName);
         if(internalName.equalsIgnoreCase("v_dummy") && finalDamage != 0) {
             Bukkit.getLogger().info(debugPrefix+"v_dummy damaged, adding damage to leaderboard.");
-            // Multiply damage by 10 to keep 1 decimal place accuracy
-            handler.addScore(String.valueOf(victimId),damager.getUniqueId(), (int) (finalDamage * 10));
+            // Multiply damage by 100 to keep 2 decimal place accuracy
+            handler.addScore(String.valueOf(victimId),damager.getUniqueId(), (int) (finalDamage * 100));
         }
     }
 
