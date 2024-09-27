@@ -1,20 +1,30 @@
 package me.lehreeeee.mmleaderboard;
 
+import me.lehreeeee.mmleaderboard.commands.Leaderboard;
 import me.lehreeeee.mmleaderboard.listeners.EntityDamageListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.ScoreboardManager;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 public final class MMLeaderboard extends JavaPlugin {
 
     private ScoreboardHandler handler;
+    private final Set<UUID> trackedEntities = new HashSet<>();
+    private String debugPrefix = "[MMLeaderboard Debug] ";
     @Override
     public void onEnable() {
         Bukkit.getLogger().info("[MMLeaderboard] Enabling MythicMobs Leaderboard...");
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        handler = new ScoreboardHandler(manager,manager.getMainScoreboard());
 
-        new EntityDamageListener(this,handler);
+        getCommand("mmleaderboard").setExecutor(new Leaderboard(this));
+
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        handler = new ScoreboardHandler(manager,manager.getMainScoreboard(),debugPrefix);
+
+        new EntityDamageListener(this,handler, debugPrefix);
 
         Bukkit.getLogger().info("[MMLeaderboard] Enabled MythicMobs Leaderboard...");
     }
@@ -22,8 +32,30 @@ public final class MMLeaderboard extends JavaPlugin {
     @Override
     public void onDisable() {
         Bukkit.getLogger().info("[MMLeaderboard] Disabling MythicMobs Leaderboard...");
-        handler.deleteObjective("v_dummy");
+
+        for (UUID uuid : trackedEntities){
+            handler.deleteObjective(String.valueOf(uuid));
+        }
+        Bukkit.getLogger().info("[MMLeaderboard] Removed all scoreboard objectives of tracked entities.");
+
         Bukkit.getLogger().info("[MMLeaderboard] Disabled MythicMobs Leaderboard...");
+    }
+
+    public void addTrackedEntity(UUID uuid) {
+        trackedEntities.add(uuid);
+        handler.createObjective(String.valueOf(uuid));
+    }
+
+    public void removeTrackedEntity(UUID uuid) {
+        trackedEntities.remove(uuid);
+        handler.deleteObjective(String.valueOf(uuid));
+    }
+    public boolean isEntityTracked(UUID uuid) {
+        return trackedEntities.contains(uuid);
+    }
+
+    public Set<UUID> getTrackedEntities(){
+        return trackedEntities;
     }
 }
 

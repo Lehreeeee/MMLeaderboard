@@ -2,3 +2,10 @@ name: MMLeaderboard
 version: '${project.version}'
 main: me.lehreeeee.mmleaderboard.MMLeaderboard
 api-version: '1.20'
+commands:
+  mmleaderboard:
+    description: Starts tracking entity for leadeboard.
+    usage: /mml [add/remove/list] <uuid>
+    aliases: mml
+    permission: mml.admin
+    permission-message: You need permission for that!

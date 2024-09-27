@@ -21,11 +21,12 @@ public class EntityDamageListener implements Listener {
 
     private MMLeaderboard plugin;
     private ScoreboardHandler handler;
-    private String debugPrefix = "[MMLeaderboard Debug] ";
+    private String debugPrefix;
 
-    public EntityDamageListener(MMLeaderboard plugin, ScoreboardHandler handler) {
+    public EntityDamageListener(MMLeaderboard plugin, ScoreboardHandler handler, String debugPrefix) {
         this.plugin = plugin;
         this.handler = handler;
+        this.debugPrefix = debugPrefix;
         Bukkit.getPluginManager().registerEvents(this,plugin);
     }
 
@@ -33,7 +34,12 @@ public class EntityDamageListener implements Listener {
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
         Entity victim = event.getEntity();
-        boolean isMythicMob = MythicBukkit.inst().getMobManager().isMythicMob(victim);
+        UUID victimId = victim.getUniqueId();
+
+        if(!plugin.isEntityTracked(victimId)){
+            Bukkit.getLogger().info(debugPrefix+"Victim " + victim.getName() + " is not tracked.");
+            return;
+        }
 
         if(!(damager instanceof Player)) {
             Bukkit.getLogger().info(debugPrefix+"Damager " + damager.getName() + " is not player.");
@@ -45,12 +51,13 @@ public class EntityDamageListener implements Listener {
             return;
         }
 
+        boolean isMythicMob = MythicBukkit.inst().getMobManager().isMythicMob(victim);
+
         if(!isMythicMob) {
             Bukkit.getLogger().info(debugPrefix+"Victim " + victim.getName() + " is not mythicmobs.");
             return;
         }
 
-        UUID victimId = victim.getUniqueId();
         Optional<ActiveMob> activeMob = MythicBukkit.inst().getMobManager().getActiveMob(victimId);
         String internalName = activeMob.get().getType().getInternalName();
 
