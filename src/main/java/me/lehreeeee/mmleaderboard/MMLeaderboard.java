@@ -10,7 +10,7 @@ public final class MMLeaderboard extends JavaPlugin {
     private ScoreboardHandler handler;
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        Bukkit.getLogger().info("[MMLeaderboard] Enabling MythicMobs Leaderboard...");
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         handler = new ScoreboardHandler(manager,manager.getMainScoreboard());
 
@@ -21,7 +21,7 @@ public final class MMLeaderboard extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        Bukkit.getLogger().info("[MMLeaderboard] Disabling MythicMobs Leaderboard...");
         handler.deleteObjective("v_dummy");
         Bukkit.getLogger().info("[MMLeaderboard] Disabled MythicMobs Leaderboard...");
     }

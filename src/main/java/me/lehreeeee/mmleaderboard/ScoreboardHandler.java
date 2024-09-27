@@ -1,5 +1,6 @@
 package me.lehreeeee.mmleaderboard;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.Score;
@@ -16,19 +17,18 @@ public class ScoreboardHandler {
     public ScoreboardHandler(ScoreboardManager scoreboardHandler,Scoreboard scoreboard) {
         this.manager = scoreboardHandler;
         this.scoreboard = scoreboard;
-        createObjective("v_dummy");
     }
 
-    public void addScore(String objectiveName, UUID uuid, int damage) {
+    public void addScore(String objectiveName, UUID damagerId, int damage) {
         Scoreboard board = manager.getMainScoreboard();
         if(board.getObjective(objectiveName) == null)
             createObjective(objectiveName);
-        Score playerScore = board.getObjective(objectiveName).getScore(Bukkit.getPlayer(uuid));
+        Score playerScore = board.getObjective(objectiveName).getScore(Bukkit.getPlayer(damagerId));
         playerScore.setScore(playerScore.getScore() + damage);
     }
 
     public static void createObjective(String objectiveName) {
-        scoreboard.registerNewObjective(objectiveName, Criteria.DUMMY,"V Dummy");
+        scoreboard.registerNewObjective(objectiveName, Criteria.DUMMY, Component.text(objectiveName));
     }
 
     public void deleteObjective(String objectiveName) {
