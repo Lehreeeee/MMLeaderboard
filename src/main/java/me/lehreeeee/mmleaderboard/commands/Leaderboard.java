@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Set;
 import java.util.UUID;
@@ -25,26 +26,36 @@ public class Leaderboard implements CommandExecutor {
 
                 if (action.equals("add")){
                     if (plugin.isEntityTracked(uuid)){
-                        Bukkit.getLogger().info("[MMLeaderboard] Entity " + uuid + " is already in tracked list.");
+                        String msg = "[MMLeaderboard] Entity " + uuid + " is already in tracked list.";
+                        Bukkit.getLogger().info(msg);
+                        if (sender instanceof Player) sender.sendMessage(msg);
                         return true;
                     }
                     plugin.addTrackedEntity(uuid);
-                    Bukkit.getLogger().info("[MMLeaderboard] Added entity " + uuid + " to tracked list.");
+                    String msg = "[MMLeaderboard] Added entity " + uuid + " to tracked list.";
+                    Bukkit.getLogger().info(msg);
+                    if (sender instanceof Player) sender.sendMessage(msg);
                     return true;
                 } else if (action.equals("remove")) {
                     plugin.removeTrackedEntity(uuid);
-                    Bukkit.getLogger().info("[MMLeaderboard] Removed entity "  + uuid + " from tracked list.");
+                    String msg = "[MMLeaderboard] Removed entity "  + uuid + " from tracked list.";
+                    Bukkit.getLogger().info(msg);
+                    if (sender instanceof Player) sender.sendMessage(msg);
                     return true;
                 }
             } catch (IllegalArgumentException e) {
-                sender.sendMessage("[MMLeaderboard] Invalid UUID format.");
+                String msg = "[MMLeaderboard] Invalid UUID format.";
+                Bukkit.getLogger().info(msg);
+                if (sender instanceof Player) sender.sendMessage(msg);
                 return false;
             }
         } else if (args.length == 1) {
              if (args[0].equals("list")){
                 Set<UUID> trackedEntityList = plugin.getTrackedEntities();
                 if (trackedEntityList.isEmpty()) {
-                    sender.sendMessage("[MMLeaderboard] No entities are currently tracked.");
+                    String msg = "[MMLeaderboard] No entities are currently tracked.";
+                    Bukkit.getLogger().info(msg);
+                    if (sender instanceof Player) sender.sendMessage(msg);
                 } else {
                     StringBuilder message = new StringBuilder("[MMLeaderboard] Tracked entities: ");
                     for (UUID uuidinlist : trackedEntityList) {

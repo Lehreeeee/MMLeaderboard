@@ -13,13 +13,12 @@ public class ScoreboardHandler {
 
     static ScoreboardManager manager;
     static Scoreboard scoreboard;
-
-    private String debugPrefix;
+//    private String debugPrefix;
 
     public ScoreboardHandler(ScoreboardManager scoreboardHandler,Scoreboard scoreboard, String debugPrefix) {
         this.manager = scoreboardHandler;
         this.scoreboard = scoreboard;
-        this.debugPrefix = debugPrefix;
+//        this.debugPrefix = debugPrefix;
     }
 
     public void addScore(String objectiveName, UUID damagerId, int damage) {
@@ -31,12 +30,12 @@ public class ScoreboardHandler {
     }
 
     public void createObjective(String objectiveName) {
-        Bukkit.getLogger().info(debugPrefix+"Creating objective - " + objectiveName);
+        Bukkit.getLogger().info("[MMLeaderboard] Creating objective - " + objectiveName);
         scoreboard.registerNewObjective(objectiveName, Criteria.DUMMY, Component.text(objectiveName));
     }
 
     public void deleteObjective(String objectiveName) {
-        Bukkit.getLogger().info(debugPrefix+"Deleting objective - " + objectiveName);
+        Bukkit.getLogger().info("[MMLeaderboard] Deleting objective - " + objectiveName);
         scoreboard.getObjective(objectiveName).unregister();
     }
 }

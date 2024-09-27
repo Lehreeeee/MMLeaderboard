@@ -1,6 +1,7 @@
 package me.lehreeeee.mmleaderboard;
 
 import me.lehreeeee.mmleaderboard.commands.Leaderboard;
+import me.lehreeeee.mmleaderboard.commands.LeaderboardTabCompleter;
 import me.lehreeeee.mmleaderboard.listeners.EntityDamageListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,7 @@ public final class MMLeaderboard extends JavaPlugin {
         Bukkit.getLogger().info("[MMLeaderboard] Enabling MythicMobs Leaderboard...");
 
         getCommand("mmleaderboard").setExecutor(new Leaderboard(this));
+        getCommand("mmleaderboard").setTabCompleter(new LeaderboardTabCompleter());
 
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         handler = new ScoreboardHandler(manager,manager.getMainScoreboard(),debugPrefix);
