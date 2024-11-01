@@ -26,7 +26,7 @@ public class Leaderboard implements CommandExecutor {
 
                 if (action.equals("add")){
                     if (plugin.isEntityTracked(uuid)){
-                        String msg = "[MMLeaderboard] Entity " + uuid + " is already in tracked list.";
+                        String msg = "[MMLeaderboard] Cannot add the entity " + uuid + ", it's already in tracked list.";
                         Bukkit.getLogger().info(msg);
                         if (sender instanceof Player) sender.sendMessage(msg);
                         return true;
@@ -37,6 +37,12 @@ public class Leaderboard implements CommandExecutor {
                     if (sender instanceof Player) sender.sendMessage(msg);
                     return true;
                 } else if (action.equals("remove")) {
+                    if (!plugin.isEntityTracked(uuid)){
+                        String msg = "[MMLeaderboard] Cannot remove the entity " + uuid + " , it's not in tracked list.";
+                        Bukkit.getLogger().info(msg);
+                        if (sender instanceof Player) sender.sendMessage(msg);
+                        return true;
+                    }
                     plugin.removeTrackedEntity(uuid);
                     String msg = "[MMLeaderboard] Removed entity "  + uuid + " from tracked list.";
                     Bukkit.getLogger().info(msg);
