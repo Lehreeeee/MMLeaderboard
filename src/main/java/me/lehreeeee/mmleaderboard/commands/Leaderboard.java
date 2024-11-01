@@ -6,19 +6,20 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.UUID;
 
 public class Leaderboard implements CommandExecutor {
-    private MMLeaderboard plugin;
+    private final MMLeaderboard plugin;
 
     public Leaderboard(MMLeaderboard plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String [] args){
+    public boolean onCommand(@NotNull CommandSender sender,@NotNull Command command,@NotNull String label, String [] args){
         if (args.length == 2) {
             String action = args[0].toLowerCase();
             try {
@@ -26,42 +27,32 @@ public class Leaderboard implements CommandExecutor {
 
                 if (action.equals("add")){
                     if (plugin.isEntityTracked(uuid)){
-                        String msg = "[MMLeaderboard] Cannot add the entity " + uuid + ", it's already in tracked list.";
-                        Bukkit.getLogger().info(msg);
-                        if (sender instanceof Player) sender.sendMessage(msg);
+                        sendFeedbackMessage(sender,"[MMLeaderboard] Cannot add the entity " + uuid + ", it's already in tracked list.");
                         return true;
                     }
                     plugin.addTrackedEntity(uuid);
-                    String msg = "[MMLeaderboard] Added entity " + uuid + " to tracked list.";
-                    Bukkit.getLogger().info(msg);
-                    if (sender instanceof Player) sender.sendMessage(msg);
+                    sendFeedbackMessage(sender,"[MMLeaderboard] Added entity " + uuid + " to tracked list.");
                     return true;
                 } else if (action.equals("remove")) {
                     if (!plugin.isEntityTracked(uuid)){
-                        String msg = "[MMLeaderboard] Cannot remove the entity " + uuid + " , it's not in tracked list.";
+                        String msg = "[MMLeaderboard] Cannot remove the entity " + uuid + ", it's not in tracked list.";
                         Bukkit.getLogger().info(msg);
                         if (sender instanceof Player) sender.sendMessage(msg);
                         return true;
                     }
                     plugin.removeTrackedEntity(uuid);
-                    String msg = "[MMLeaderboard] Removed entity "  + uuid + " from tracked list.";
-                    Bukkit.getLogger().info(msg);
-                    if (sender instanceof Player) sender.sendMessage(msg);
+                    sendFeedbackMessage(sender,"[MMLeaderboard] Removed entity "  + uuid + " from tracked list.");
                     return true;
                 }
             } catch (IllegalArgumentException e) {
-                String msg = "[MMLeaderboard] Invalid UUID format.";
-                Bukkit.getLogger().info(msg);
-                if (sender instanceof Player) sender.sendMessage(msg);
+                sendFeedbackMessage(sender,"[MMLeaderboard] Invalid UUID format.");
                 return false;
             }
         } else if (args.length == 1) {
              if (args[0].equals("list")){
                 Set<UUID> trackedEntityList = plugin.getTrackedEntities();
                 if (trackedEntityList.isEmpty()) {
-                    String msg = "[MMLeaderboard] No entities are currently tracked.";
-                    Bukkit.getLogger().info(msg);
-                    if (sender instanceof Player) sender.sendMessage(msg);
+                    sendFeedbackMessage(sender,"[MMLeaderboard] No entities are currently tracked.");
                 } else {
                     StringBuilder message = new StringBuilder("[MMLeaderboard] Tracked entities: ");
                     for (UUID uuidinlist : trackedEntityList) {
@@ -77,5 +68,10 @@ public class Leaderboard implements CommandExecutor {
             }
         }
         return false;
+    }
+
+    public void sendFeedbackMessage(CommandSender sender, String msg){
+        Bukkit.getLogger().info(msg);
+        if (sender instanceof Player) sender.sendMessage(msg);
     }
 }
