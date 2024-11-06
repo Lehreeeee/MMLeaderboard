@@ -2,40 +2,43 @@ package me.lehreeeee.mmleaderboard;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.scoreboard.Criteria;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.*;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class ScoreboardHandler {
+    private final Scoreboard scoreboard;
+    private final Logger logger;
 
-    static ScoreboardManager manager;
-    static Scoreboard scoreboard;
-//    private String debugPrefix;
-
-    public ScoreboardHandler(ScoreboardManager scoreboardHandler,Scoreboard scoreboard, String debugPrefix) {
-        this.manager = scoreboardHandler;
+    public ScoreboardHandler(Scoreboard scoreboard, Logger logger) {
         this.scoreboard = scoreboard;
-//        this.debugPrefix = debugPrefix;
+        this.logger = logger;
     }
 
     public void addScore(String objectiveName, UUID damagerId, int damage) {
-        Scoreboard board = manager.getMainScoreboard();
-        if(board.getObjective(objectiveName) == null)
-            createObjective(objectiveName);
-        Score playerScore = board.getObjective(objectiveName).getScore(Bukkit.getPlayer(damagerId));
+        Objective objective = scoreboard.getObjective(objectiveName);
+
+        // Just in case objective is deleted after adding to the list
+        if(objective == null)
+            objective = createObjective(objectiveName);
+        Score playerScore = objective.getScore(Bukkit.getPlayer(damagerId));
         playerScore.setScore(playerScore.getScore() + damage);
     }
 
-    public void createObjective(String objectiveName) {
-        Bukkit.getLogger().info("[MMLeaderboard] Creating objective - " + objectiveName);
-        scoreboard.registerNewObjective(objectiveName, Criteria.DUMMY, Component.text(objectiveName));
+    public Objective createObjective(String objectiveName) {
+        Objective objective = scoreboard.registerNewObjective(objectiveName, Criteria.DUMMY, Component.text(objectiveName));
+        logger.info("Created objective - " + objectiveName);
+        return objective;
     }
 
     public void deleteObjective(String objectiveName) {
-        Bukkit.getLogger().info("[MMLeaderboard] Deleting objective - " + objectiveName);
-        scoreboard.getObjective(objectiveName).unregister();
+        Objective objective = scoreboard.getObjective(objectiveName);
+        if(objective != null){
+            objective.unregister();
+            logger.info("Deleted objective - " + objectiveName);
+        }
+        else
+            logger.info("Failed to delete objective - " + objectiveName + ", objective not found.");
     }
 }

@@ -5,42 +5,37 @@ import me.lehreeeee.mmleaderboard.commands.LeaderboardTabCompleter;
 import me.lehreeeee.mmleaderboard.listeners.EntityDamageListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public final class MMLeaderboard extends JavaPlugin {
 
     private ScoreboardHandler handler;
     private final Set<UUID> trackedEntities = new HashSet<>();
-    private String debugPrefix = "[MMLeaderboard Debug] ";
+    private final Logger logger = getLogger();
+
     @Override
     public void onEnable() {
-        Bukkit.getLogger().info("[MMLeaderboard] Enabling MythicMobs Leaderboard...");
-
         getCommand("mmleaderboard").setExecutor(new Leaderboard(this));
         getCommand("mmleaderboard").setTabCompleter(new LeaderboardTabCompleter());
 
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        handler = new ScoreboardHandler(manager,manager.getMainScoreboard(),debugPrefix);
+        handler = new ScoreboardHandler(Bukkit.getScoreboardManager().getMainScoreboard(), logger);
 
-        new EntityDamageListener(this,handler, debugPrefix);
+        new EntityDamageListener(this,handler);
 
-        Bukkit.getLogger().info("[MMLeaderboard] Enabled MythicMobs Leaderboard...");
+        logger.info("Enabled MythicMobs Leaderboard...");
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getLogger().info("[MMLeaderboard] Disabling MythicMobs Leaderboard...");
-
         for (UUID uuid : trackedEntities){
             handler.deleteObjective(String.valueOf(uuid));
         }
-        Bukkit.getLogger().info("[MMLeaderboard] Removed all scoreboard objectives of tracked entities.");
-
-        Bukkit.getLogger().info("[MMLeaderboard] Disabled MythicMobs Leaderboard...");
+        logger.info("Removed all scoreboard objectives of tracked entities.");
+        logger.info("Disabled MythicMobs Leaderboard...");
     }
 
     public void addTrackedEntity(UUID uuid) {

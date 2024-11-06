@@ -2,7 +2,7 @@ package me.lehreeeee.mmleaderboard.listeners;
 
 
 import io.lumine.mythic.bukkit.MythicBukkit;
-import io.lumine.mythic.core.mobs.ActiveMob;
+import io.lumine.mythic.core.mobs.MobExecutor;
 import me.lehreeeee.mmleaderboard.MMLeaderboard;
 import me.lehreeeee.mmleaderboard.ScoreboardHandler;
 import org.bukkit.Bukkit;
@@ -14,21 +14,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class EntityDamageListener implements Listener {
 
-    private MMLeaderboard plugin;
-    private ScoreboardHandler handler;
-    private String debugPrefix;
+    private final MMLeaderboard plugin;
+    private final ScoreboardHandler handler;
+    private final MobExecutor MythicMobsManager;
 
-    public EntityDamageListener(MMLeaderboard plugin, ScoreboardHandler handler, String debugPrefix) {
+    public EntityDamageListener(MMLeaderboard plugin, ScoreboardHandler handler) {
         this.plugin = plugin;
         this.handler = handler;
-        this.debugPrefix = debugPrefix;
+        this.MythicMobsManager = MythicBukkit.inst().getMobManager();
         Bukkit.getPluginManager().registerEvents(this,plugin);
     }
 
@@ -43,10 +41,10 @@ public class EntityDamageListener implements Listener {
             return;
         }
 
-        // Handle projectile
+        // Handle projectile, this is what MythicMobs built in leaderboard is lacking
         if (damager instanceof Projectile) {
             Projectile proj = (Projectile) damager;
-            // Set damager to arrow shooter
+            // Set damager to arrow shooter instead of arrow
             if(proj.getShooter() instanceof Entity) {
                 damager = (Entity) proj.getShooter();
             }
@@ -62,14 +60,11 @@ public class EntityDamageListener implements Listener {
             return;
         }
 
-        boolean isMythicMob = MythicBukkit.inst().getMobManager().isMythicMob(victim);
-
         // Its for MM only
-        if(!isMythicMob) {
+        if(!MythicMobsManager.isMythicMob(victim)) {
             return;
         }
 
-        Optional<ActiveMob> activeMob = MythicBukkit.inst().getMobManager().getActiveMob(victimId);
         double finalDamage = event.getFinalDamage();
 
         // No dmg overflow
@@ -81,56 +76,11 @@ public class EntityDamageListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
-        Entity entity = event.getEntity();
-
-        if ((event.getCause() == EntityDamageEvent.DamageCause.FIRE ||
-                event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK) &&
-                entity instanceof LivingEntity) {
-            LivingEntity mob = (LivingEntity) entity;
-        }
-    }
-
     public double getMobHealth(Entity victim) {
-
-        if (victim != null && victim instanceof LivingEntity) {
+        if (victim instanceof LivingEntity) {
             LivingEntity mob = (LivingEntity) victim;
             return mob.getHealth();
         }
-
         return -1;
     }
-
-    /*
-    // For mmostats on mm
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void onAttack(PlayerAttackEvent event) {
-
-        AttackMetadata attack = event.getAttack();
-        LivingEntity victim = attack.getTarget();
-        boolean isMythicMob = MythicBukkit.inst().getMobManager().isMythicMob(victim);
-
-        if(!isMythicMob) {
-            Bukkit.getLogger().info(debugPrefix+"Victim " + victim.getName() + " is not mythicmobs.");
-            return;
-        }
-
-        DamageMetadata damage = attack.getDamage();
-
-        Optional<ActiveMob> activeMob = MythicBukkit.inst().getMobManager().getActiveMob(victim.getUniqueId());
-        String internalName = activeMob.get().getType().getInternalName();
-
-        //
-
-        if(internalName.equalsIgnoreCase("v_dummy") && damage.hasElement(Element.valueOf("INA"))) {
-//            Bukkit.getLogger().info(debugPrefix+"v_dummy detected, adding 10 ina damage.");
-//            damage.add(10, Element.valueOf("INA")); // add 10 weapon-physical damage
-
-            Bukkit.getLogger().info(debugPrefix+"v_dummy detected, doing 50% more ina element damage.");
-            damage.multiplicativeModifier(1.5, Element.valueOf("INA")); // increase skill damage by 50%
-        }
-    }
-    */
-
 }
