@@ -50,8 +50,12 @@ public final class MMLeaderboard extends JavaPlugin {
 
         // Does it have children? Remove all if yes.
         if(linkedEntities.containsValue(uuid)){
+            logger.info("Found child for this parent, removing them from linked list.");
             for(UUID key : linkedEntities.keySet()) {
-                if(linkedEntities.get(key) == uuid) linkedEntities.remove(key);
+                if(linkedEntities.get(key).equals(uuid)) {
+                    linkedEntities.remove(key);
+                    logger.info("Removed children " + key + " from linked list.");
+                }
             }
         }
     }
