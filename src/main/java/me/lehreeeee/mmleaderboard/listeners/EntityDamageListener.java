@@ -4,7 +4,7 @@ package me.lehreeeee.mmleaderboard.listeners;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.MobExecutor;
 import me.lehreeeee.mmleaderboard.MMLeaderboard;
-import me.lehreeeee.mmleaderboard.ScoreboardHandler;
+import me.lehreeeee.mmleaderboard.managers.ScoreboardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,10 +20,10 @@ import java.util.UUID;
 public class EntityDamageListener implements Listener {
 
     private final MMLeaderboard plugin;
-    private final ScoreboardHandler handler;
+    private final ScoreboardManager handler;
     private final MobExecutor MythicMobsManager;
 
-    public EntityDamageListener(MMLeaderboard plugin, ScoreboardHandler handler) {
+    public EntityDamageListener(MMLeaderboard plugin, ScoreboardManager handler) {
         this.plugin = plugin;
         this.handler = handler;
         this.MythicMobsManager = MythicBukkit.inst().getMobManager();
@@ -34,15 +34,16 @@ public class EntityDamageListener implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
         Entity victim = event.getEntity();
-        UUID victimId = victim.getUniqueId();
+        UUID victimUUID = victim.getUniqueId();
+        boolean isChildren = plugin.isEntityLinked(victimUUID);
 
-        // Ignore untracked victim
-        if(!plugin.isEntityTracked(victimId)){
+        // Ignore untracked and unlinked victim
+        if(!plugin.isEntityTracked(victimUUID) && !isChildren){
             return;
         }
 
         // Handle projectile, this is what MythicMobs built in leaderboard is lacking
-        if (damager instanceof Projectile) {
+        if(damager instanceof Projectile) {
             Projectile proj = (Projectile) damager;
             // Set damager to arrow shooter instead of arrow
             if(proj.getShooter() instanceof Entity) {
@@ -56,7 +57,7 @@ public class EntityDamageListener implements Listener {
         }
 
         // Ignore not alive victim
-        if (!(victim instanceof LivingEntity)) {
+        if(!(victim instanceof LivingEntity)) {
             return;
         }
 
@@ -66,13 +67,17 @@ public class EntityDamageListener implements Listener {
         }
 
         double finalDamage = event.getFinalDamage();
+        String scoreboardName = String.valueOf(victimUUID);
+
+        // is it a child? If yes then use parent's leaderboard.
+        if(isChildren) scoreboardName = String.valueOf(plugin.getLinkedParent(victimUUID));
 
         // No dmg overflow
         finalDamage = Math.min(finalDamage, getMobHealth(victim));
 
         if(finalDamage != 0) {
             // Multiply damage by 100 to keep 2 decimal place accuracy
-            handler.addScore(String.valueOf(victimId),damager.getUniqueId(), (int) (finalDamage * 100));
+            handler.addScore(scoreboardName ,damager.getUniqueId(), (int) (finalDamage * 100));
         }
     }
 

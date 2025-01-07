@@ -1,4 +1,4 @@
-package me.lehreeeee.mmleaderboard;
+package me.lehreeeee.mmleaderboard.managers;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -7,11 +7,11 @@ import org.bukkit.scoreboard.*;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class ScoreboardHandler {
+public class ScoreboardManager {
     private final Scoreboard scoreboard;
     private final Logger logger;
 
-    public ScoreboardHandler(Scoreboard scoreboard, Logger logger) {
+    public ScoreboardManager(Scoreboard scoreboard, Logger logger) {
         this.scoreboard = scoreboard;
         this.logger = logger;
     }

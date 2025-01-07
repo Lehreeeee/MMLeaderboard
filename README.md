@@ -48,5 +48,5 @@ MMLeaderboard is a Minecraft plugin that tracks player damage dealt to MythicMob
 - Due to Minecraft's scoreboard limitations, damage numbers will be rounded up and multiplied by 100 to maintain only 2 decimal places of accuracy.
 
 ## Future Plans
-- Allow linking an entity to the leaderboard of another entity (For damage taken by minions to be counted towards their parent's leaderboard)
+- ~~Allow linking an entity to the leaderboard of another entity (For damage taken by minions to be counted towards their parent's leaderboard)~~ ✅ 
 - Implement custom scoreboard mechanics to bypass the limitation of Minecraft scoreboard only able to take in integer value

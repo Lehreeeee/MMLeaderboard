@@ -8,6 +8,7 @@ commands:
     usage:
     - /mml [add/remove] <UUID>
     - /mml list
+    - /mml link <Child UUID> <Parent UUID>
     aliases: mml
     permission: mml.admin
     permission-message: You need permission for that!
