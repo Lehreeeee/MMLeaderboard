@@ -1,3 +1,8 @@
+# ⚠️ Archived ⚠️
+
+**This repository has been archived**
+
+The features of this plugin have been integrated into my other project — [HoloUtils](https://github.com/Lehreeeee/HoloUtils).
 
 # MMLeaderboard
 
